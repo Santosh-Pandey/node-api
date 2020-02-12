@@ -5,14 +5,18 @@ module.exports = (app) => {
     app.post('/notes', notes.create);
 
     // Retrieve all Notes
-    app.get('/notes', notes.findAll);
+    app.get('/notes?', notes.findAll);
 
     // Retrieve a single Note with noteId
-    app.get('/notes/:noteId', notes.findOne);
+    app.get('/notesbyid?', notes.findOne);
 
     // Update a Note with noteId
-    app.put('/notes/:noteId', notes.update);
+    app.post('/notesupbyid', notes.update);
 
     // Delete a Note with noteId
-    app.delete('/notes/:noteId', notes.delete);
+    app.get('/notesdelbyid?', notes.delete);
+
+    // File Upload in 
+
+    app.post('/uploadfile', notes.uploadfile);
 }

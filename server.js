@@ -1,8 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const fileUpload = require('express-fileupload');
+var cors = require('cors');
 // create express app
 const app = express();
+app.use(cors());
+
+// enable files upload
+app.use(fileUpload({
+    createParentPath: true
+}));
+//app.use(express.static('uploads'));
+
 
 const redis = require("redis");
 
@@ -17,7 +26,7 @@ app.use(bodyParser.json());
 require('./app/routes/auth.route.js')(app);
 
 
-app.use(require('./middlewares/TokenValidator.js'));
+//#####app.use(require('./middlewares/TokenValidator.js'));
 // Require Notes routes; these route without token validating route
 require('./app/routes/note.routes.js')(app);
 require('./app/routes/contec.route.js')(app);
@@ -86,6 +95,6 @@ app.get('/', (req, res) => {
 });
 
 // listen for requests
-app.listen(3000, () => {
-    console.log("Server is listening on port 3000");
+app.listen(3001, () => {
+    console.log("Server is listening on port 3001");
 });

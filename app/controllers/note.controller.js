@@ -1,4 +1,6 @@
 const Note = require('../models/note.model.js');
+const myfileupload = require('../../utill/fileUpload.utill.js');
+
 
 // Create and Save a new Note
 exports.create = (req, res) => {
@@ -9,7 +11,7 @@ exports.create = (req, res) => {
         });
     }
 
-    console.log(req.body.other_info);
+    //console.log(req.body.other_info);
 
     // Create a Note
     const note = new Note({
@@ -28,9 +30,15 @@ exports.create = (req, res) => {
     // Save Note in the database
     note.save()
     .then(data => {
-        res.send(data);
+        result = {};
+        result.message = 'Record successfully created';
+        result.error = 0;
+        result.data = data;
+        res.send(JSON.stringify(result));
+
     }).catch(err => {
         res.status(500).send({
+            error : 1,
             message: err.message || "Some error occurred while creating the Note."
         });
     });
@@ -41,34 +49,68 @@ exports.create = (req, res) => {
 
 // Retrieve and return all notes from the database.
 exports.findAll = (req, res) => {
-    Note.find()
+    //console.log('hiiiiii');
+    var pageNo = parseInt(req.query.pageNo);
+    var size = parseInt(req.query.size);
+    var query = {};
+
+    query.skip = size * (pageNo - 1)
+    query.limit = size
+
+    /*Note.find()
     .then(notes => {
         res.send(notes);
     }).catch(err => {
         res.status(500).send({
             message: err.message || "Some error occurred while retrieving notes."
         });
+    });*/
+
+     // Find some documents
+       Note.countDocuments({},function(err,totalCount) {
+             if(err) {
+               response = {"error" : true,"message" : "Error fetching data"}
+             }
+         Note.find({},{},query,function(err,data) {
+              // Mongo command to fetch all data from collection.
+            if(err) {
+                response = {"error" : true,"message" : "Error fetching data"};
+            } else {
+                var totalPages = Math.ceil(totalCount / size)
+                response = {"error" : 111111,"message" : data,"pages": totalPages};
+            }
+            //res.json(response);
+            res.json(response);
+         })
+         .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving notes."
+            });
     });
+
+
+
+       })
 };
 
 // Find a single note with a noteId
 exports.findOne = (req, res) => {
-    Note.findById(req.params.noteId)
+    Note.findById(req.query.noteId)
     .then(note => {
         if(!note) {
             return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
+                message: "Note not found with id " + req.query.noteId
             });            
         }
         res.send(note);
     }).catch(err => {
         if(err.kind === 'ObjectId') {
             return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
+                message: "Note not found with id " + req.query.noteId
             });                
         }
         return res.status(500).send({
-            message: "Error retrieving note with id " + req.params.noteId
+            message: "Error retrieving note with id " + req.query.noteId
         });
     });
 };
@@ -85,25 +127,26 @@ exports.update = (req, res) => {
     }
 
     // Find note and update it with the request body
-    Note.findByIdAndUpdate(req.params.noteId, {
+    Note.findByIdAndUpdate(req.body.id, {
         title: req.body.title || "Untitled Note",
         content: req.body.content
+
     }, {new: true})
     .then(note => {
         if(!note) {
             return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
+                message: "Note not found with id " + req.query.noteId
             });
         }
         res.send(note);
     }).catch(err => {
         if(err.kind === 'ObjectId') {
             return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
+                message: "Note not found with id " + req.query.noteId
             });                
         }
         return res.status(500).send({
-            message: "Error updating note with id " + req.params.noteId
+            message: "Error updating note with id " + req.query.noteId
         });
     });
 };
@@ -113,22 +156,49 @@ exports.update = (req, res) => {
 
 // Delete a note with the specified noteId in the request
 exports.delete = (req, res) => {
-    Note.findByIdAndRemove(req.params.noteId)
+    Note.findByIdAndRemove(req.query.noteId)
     .then(note => {
         if(!note) {
             return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
+                message: "Note not found with id " + req.query.noteId
             });
         }
-        res.send({message: "Note deleted successfully!"});
+        //res.send({message: "Note deleted successfully!"});
+        res.json({message: "Note deleted successfully!"});
+
     }).catch(err => {
         if(err.kind === 'ObjectId' || err.name === 'NotFound') {
             return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
+                message: "Note not found with id " + req.query.noteId
             });                
         }
         return res.status(500).send({
-            message: "Could not delete note with id " + req.params.noteId
+            message: "Could not delete note with id " + req.query.noteId
         });
     });
+};
+
+//fileupload
+
+exports.uploadfile = (req, res) => {
+   try {
+        
+        const image = req.files.myFile
+        const result = myfileupload.uploadfile(image);
+
+       //Anonymious function does not return direct value so we use callback
+        myfileupload.uploadfile(image, function(err,result){
+            console.log(result);
+            if(result === true){
+                res.json({message: "file successfully uploaded",status:"1"})
+            }else{
+                res.status(500).send({message: "Error On uploading files",status:"0"});
+            }
+        });
+
+
+
+    } catch (err) {
+        res.status(500).send(err);
+    }
 };
