@@ -19,4 +19,8 @@ module.exports = (app) => {
     // File Upload in 
 
     app.post('/uploadfile', notes.uploadfile);
+
+    app.post('/sendemail', notes.sendemail);
+    
+
 }

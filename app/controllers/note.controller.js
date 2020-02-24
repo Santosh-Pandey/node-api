@@ -1,5 +1,6 @@
 const Note = require('../models/note.model.js');
 const myfileupload = require('../../utill/fileUpload.utill.js');
+var nodemailer = require('nodemailer');
 
 
 // Create and Save a new Note
@@ -199,6 +200,50 @@ exports.uploadfile = (req, res) => {
 
 
     } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
+
+exports.sendemail = (req, res) => {
+   try {
+        
+
+        let transporter = nodemailer.createTransport({
+          host: 'smtp.googlemail.com',
+          port: 465,
+          secure: true,
+          auth: {
+              user: 'software@cg-infotech.com',
+              pass: 'CG!L1234!@#$'
+          }
+        });
+
+        let mailOptions = {
+              from: '<software@cg-infotech.com>', // sender address
+              to: req.body.to, // list of receivers
+              subject: req.body.subject, // Subject line
+              text: req.body.body, // plain text body
+              html: '<b>req.body.body</b>' // html body
+        };
+
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+              return console.log(error);
+              return res.status(500).send({
+                        message: error
+                    });
+          }
+          
+
+          //console.log('Message %s sent: %s', info.messageId, info.response);
+          res.json({message: 'Message %s sent: %s' + info.messageId + '|' + info.response});    
+
+        });
+      
+    } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 };

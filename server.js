@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
+//const nodeMailer = require('nodemailer');
 var cors = require('cors');
 // create express app
 const app = express();
