@@ -4,8 +4,11 @@ module.exports = (app) => {
     // Create a new Note
     app.post('/notes', notes.create);
 
-    // Retrieve all Notes
+    // Retrieve all by offset limit Notes
     app.get('/notes?', notes.findAll);
+
+     // Retrieve all Notes at once
+    app.get('/allnotes', notes.allnotes);
 
     // Retrieve a single Note with noteId
     app.get('/notesbyid?', notes.findOne);

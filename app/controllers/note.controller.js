@@ -45,8 +45,21 @@ exports.create = (req, res) => {
     });
 };
 
+// Get all Notes
+exports.allnotes = (req, res) => {
+    Note.find()
+    .then(notes => {
+        //res.send(notes);
+        response = {"error" : 0,"message" : 'Success',"data": notes};
+        res.json(response);
 
+    }).catch(err => {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving notes."
+        });
+    });
 
+};
 
 // Retrieve and return all notes from the database.
 exports.findAll = (req, res) => {
@@ -224,7 +237,7 @@ exports.sendemail = (req, res) => {
               to: req.body.to, // list of receivers
               subject: req.body.subject, // Subject line
               text: req.body.body, // plain text body
-              html: '<b>req.body.body</b>' // html body
+              html: req.body.body // html body
         };
 
 
@@ -238,7 +251,8 @@ exports.sendemail = (req, res) => {
           
 
           //console.log('Message %s sent: %s', info.messageId, info.response);
-          res.json({message: 'Message %s sent: %s' + info.messageId + '|' + info.response});    
+          //res.json({message: 'Message %s sent: %s' + info.messageId + '|' + info.response}); 
+          res.json({message: 'Email Sent successfully'});    
 
         });
       
