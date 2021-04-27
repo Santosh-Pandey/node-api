@@ -25,7 +25,7 @@
     "mongoose": "^5.8.9",
     "mysql": "^2.18.1",
     "nodemailer": "^6.4.3",
-    "redis": "^2.8.0",
+    "redis": "^3.1.1",
     "rethinkdb": "^2.4.2"
   }
 }
