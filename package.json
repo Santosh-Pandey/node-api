@@ -24,7 +24,7 @@
     "log4js": "^6.1.1",
     "mongoose": "^5.8.9",
     "mysql": "^2.18.1",
-    "nodemailer": "^6.4.3",
+    "nodemailer": "^6.4.16",
     "redis": "^2.8.0",
     "rethinkdb": "^2.4.2"
   }
